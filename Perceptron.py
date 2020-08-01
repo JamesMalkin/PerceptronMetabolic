@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import scipy
 from sklearn.metrics import accuracy_score, confusion_matrix
 import joblib
-
+import csv
 
 class Perceptron:
     X = 0
@@ -128,9 +128,7 @@ class Perceptron:
         joblib.dump(weights, 'model.sav')
 
     def fit_with_cache(self):
-        if self.nocache_metabolic_cost == [0, 0]:
-            self.fit()
-
+        self.fit()
         for th in range(len(self.con_thresholds)):
             original_weights = joblib.load('original_weights.sav')
             self.w = original_weights
@@ -143,9 +141,10 @@ class Perceptron:
             self.consolidation_iteration = [0]
             self.iterations = 0
             self.SquarederrorCount.append(0)
-            self.epoch_with_cache()
             self.maintenance_cost = 0
             self.consolidation_cost = 0
+
+            self.epoch_with_cache()
             while self.SquarederrorCount[self.epochNumber] != 0:
                 self.epochNumber += 1
                 self.SquarederrorCount.append(0)
@@ -160,10 +159,7 @@ class Perceptron:
             self.maintenance_costs.append(self.maintenance_cost)
             self.consolidation_costs.append(self.consolidation_cost)
 
-        if len(self.nocache_metabolic_cost) == 1:
-            col_names = []
-        else:
-            col_names = ['No Cache']
+        col_names = ['No Cache']
         for col in self.con_thresholds:
             col_names.append('Threshold = ' + str(col))
         self.metabolic_df.columns = col_names
@@ -205,6 +201,22 @@ class Perceptron:
         f = self.metabolic_df.iloc[-1]
         f = list(f.values)
         f.pop(0)
+
+        with open('total_metabolic.csv', mode='a') as total_metabolic_file:
+            total_metabolic_writer = csv.writer(total_metabolic_file, delimiter=',', quotechar='"',
+                                                quoting=csv.QUOTE_MINIMAL)
+            total_metabolic_writer.writerow(f)
+
+        with open('maintenance_metabolic.csv', mode='a') as maintenance_metabolic_file:
+            maintenance_metabolic_writer = csv.writer(maintenance_metabolic_file, delimiter=',', quotechar='"',
+                                                quoting=csv.QUOTE_MINIMAL)
+            maintenance_metabolic_writer.writerow(self.maintenance_costs)
+
+        with open('consolidation_metabolic.csv', mode='a') as consolidation_metabolic_file:
+            consolidation_metabolic_writer = csv.writer(consolidation_metabolic_file, delimiter=',', quotechar='"',
+                                                quoting=csv.QUOTE_MINIMAL)
+            consolidation_metabolic_writer.writerow(self.consolidation_costs)
+
         x = list(self.con_thresholds)
 
         fig, ax = plt.subplots(1, 1)
@@ -242,8 +254,6 @@ def train_perceptron():
 
     run.generate_data(0.5)
 
-    run.fit()
-
     run.fit_with_cache()
 
     run.present_metabolic_data()
@@ -257,6 +267,21 @@ def test_perceptron():
 
 
 consolidation_thresholds = range(1, 21)
+
+with open('total_metabolic.csv', mode='w') as total_metabolic_file:
+    total_metabolic_writer = csv.writer(total_metabolic_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    total_metabolic_writer.writerow(consolidation_thresholds)
+
+with open('maintenance_metabolic.csv', mode='w') as maintenance_metabolic_file:
+    maintenance_metabolic_writer = csv.writer(maintenance_metabolic_file, delimiter=',', quotechar='"',
+                                              quoting=csv.QUOTE_MINIMAL)
+    maintenance_metabolic_writer.writerow(consolidation_thresholds)
+
+with open('consolidation_metabolic.csv', mode='w') as consolidation_metabolic_file:
+    consolidation_metabolic_writer = csv.writer(consolidation_metabolic_file, delimiter=',', quotechar='"',
+                                                quoting=csv.QUOTE_MINIMAL)
+    consolidation_metabolic_writer.writerow(consolidation_thresholds)
+
 learning_rate = 1
 features = 100
 instances = 100
