@@ -250,7 +250,7 @@ class Perceptron:
 
 
 def train_perceptron():
-    np.random.seed(0)
+    np.random.seed(9)
 
     run.generate_data(0.5)
 
@@ -268,7 +268,7 @@ def test_perceptron():
 
 consolidation_thresholds = range(1, 21)
 
-with open('total_metabolic.csv', mode='w') as total_metabolic_file:
+'''with open('total_metabolic.csv', mode='w') as total_metabolic_file:
     total_metabolic_writer = csv.writer(total_metabolic_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
     total_metabolic_writer.writerow(consolidation_thresholds)
 
@@ -280,7 +280,7 @@ with open('maintenance_metabolic.csv', mode='w') as maintenance_metabolic_file:
 with open('consolidation_metabolic.csv', mode='w') as consolidation_metabolic_file:
     consolidation_metabolic_writer = csv.writer(consolidation_metabolic_file, delimiter=',', quotechar='"',
                                                 quoting=csv.QUOTE_MINIMAL)
-    consolidation_metabolic_writer.writerow(consolidation_thresholds)
+    consolidation_metabolic_writer.writerow(consolidation_thresholds)'''
 
 learning_rate = 1
 features = 100
